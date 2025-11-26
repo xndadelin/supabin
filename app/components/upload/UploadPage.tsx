@@ -28,6 +28,99 @@ export default function UploadPage() {
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const supabase = createClient();
 
+  const uploadFilesToSupabase = useCallback(
+    async (filesToUpload: UploadedFile[]) => {
+      setUploading(true);
+      for (const fileObj of filesToUpload) {
+        if (fileObj.isFolder) {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === fileObj.id
+                ? {
+                    ...f,
+                    progress: 100,
+                    status: "completed",
+                  }
+                : f
+            )
+          );
+          continue;
+        }
+        const realFile = fileObj.file ?? null;
+        if (!realFile) {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === fileObj.id
+                ? {
+                    ...f,
+                    status: "error",
+                  }
+                : f
+            )
+          );
+          continue;
+        }
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.id === fileObj.id
+              ? {
+                  ...f,
+                  status: "uploading",
+                }
+              : f
+          )
+        );
+        const folderPath = uploadName ? `${uploadName}` : "uploads";
+        const filePath = `${folderPath}/${Date.now()}_${realFile.name}}`;
+        const { error } = await supabase.storage
+          .from("uploads")
+          .upload(filePath, realFile, {
+            upsert: true,
+          });
+        if (error) {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === fileObj.id
+                ? {
+                    ...f,
+                    status: "error",
+                  }
+                : f
+            )
+          );
+          continue;
+        }
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.id === fileObj.id
+              ? { ...f, progress: 100, status: "completed" }
+              : f
+          )
+        );
+        setUploading(false);
+        const slug = customSlug || Math.random().toString(36).substring(2, 9);
+        await supabase.from("uploads").insert({
+          slug,
+          email,
+          password,
+          max_downloads: maxDownloads,
+          expiry_hours: expiryTime,
+          allow_preview: allowPreview,
+          created_at: new Date(),
+        });
+      }
+    },
+    [
+      uploadName,
+      customSlug,
+      email,
+      password,
+      maxDownloads,
+      expiryTime,
+      allowPreview,
+    ]
+  );
+
   const processFiles = useCallback(
     (
       items: FileList | File[],
@@ -136,101 +229,30 @@ export default function UploadPage() {
 
       setShowSettings(true);
     },
-    [processFiles]
+    [processFiles, uploadFilesToSupabase]
   );
 
-  const uploadFilesToSupabase = useCallback(
-    async (filesToUpload: UploadedFile[]) => {
-      setUploading(true);
-      for (const fileObj of filesToUpload) {
-        if (fileObj.isFolder) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    progress: 100,
-                    status: "completed",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        const realFile = fileObj.file ?? null;
-        if (!realFile) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    status: "error",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileObj.id
-              ? {
-                  ...f,
-                  status: "uploading",
-                }
-              : f
-          )
-        );
-        const folderPath = uploadName ? `${uploadName}` : "uploads";
-        const filePath = `${folderPath}/${Date.now()}_${realFile.name}}`;
-        const { error } = await supabase.storage
-          .from("uploads")
-          .upload(filePath, realFile, {
-            upsert: true,
-          });
-        if (error) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    status: "error",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileObj.id
-              ? { ...f, progress: 100, status: "completed" }
-              : f
-          )
-        );
-        setUploading(false);
-        const slug = customSlug || Math.random().toString(36).substring(2, 9);
-        await supabase.from("uploads").insert({
-          slug,
-          email,
-          password,
-          max_downloads: maxDownloads,
-          expiry_hours: expiryTime,
-          allow_preview: allowPreview,
-          created_at: new Date(),
-        });
-      }
-    },
-    [
-      uploadName,
-      customSlug,
-      email,
-      password,
-      maxDownloads,
-      expiryTime,
-      allowPreview,
-    ]
-  );
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!e.target.files) return;
+    const items = e.target.files;
+    const folderName = (items[0] as any).webkitRelativePath.split("/")[0]
+    const newFiles = processFiles(items, folderName)
+    setFiles(prev => [
+        ...prev, 
+        ...newFiles
+    ])
+    uploadFilesToSupabase(newFiles)
+  }, [processFiles, uploadFilesToSupabase])
+
+  const removeFile = useCallback((id: string) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
+    if(files.length === 1) {
+        setShowSettings(false);
+        setShareLink("");
+    }
+  }, [files.length])
+
+  
 
   return <div onDragOver={handleDragOver} onDragLeave={handleDragLeave}></div>;
 }
