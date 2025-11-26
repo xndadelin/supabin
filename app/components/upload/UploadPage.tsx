@@ -78,6 +78,42 @@ export default function UploadPage() {
         e.preventDefault()
         setIsDragging(false)
     }, [])
+    
+    const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(false)
+
+        const items = e.dataTransfer.items;
+        const filesList: File[] = []
+
+        for(let i = 0; i < items.length; i++) {
+            const entry = (items[i] as any).webkitGetAsEntry?.();
+            if (entry) {
+                if(entry.isDirectory) {
+                    const folderFiles = Array.from(e.dataTransfer.files).filter(
+                        (f: File & {
+                            webkitRelativePath?: string 
+                        }) =>
+                            f.webkitRelativePath && f.webkitRelativePath.startsWith(entry.name)
+                    )
+                    const newFiles = processFiles(folderFiles, entry.name)
+                    setFiles((prev) => [
+                        ...prev, ...newFiles
+                    ])
+                } else {
+                    filesList.push(e.dataTransfer.files[i])
+                }
+                
+            }
+        }
+
+        if (files.length > 0) {
+            const newFiles = processFiles(filesList);
+            setFiles((prev) => [...prev, ...newFiles])
+        }
+
+        setShowSettings(true)
+    }, [processFiles])
 
     return (
         <div
