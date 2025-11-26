@@ -252,7 +252,5 @@ export default function UploadPage() {
     }
   }, [files.length])
 
-  
-
   return <div onDragOver={handleDragOver} onDragLeave={handleDragLeave}></div>;
 }
