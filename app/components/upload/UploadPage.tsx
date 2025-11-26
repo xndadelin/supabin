@@ -225,7 +225,7 @@ export default function UploadPage() {
         }
       }
 
-      if (files.length > 0) {
+      if (filesList.length > 0) {
         const newFiles = processFiles(filesList);
         setFiles((prev) => [...prev, ...newFiles]);
       }
@@ -271,6 +271,7 @@ export default function UploadPage() {
               files={files}
               onRemove={removeFile}
               onAddMore={handleFileSelect}
+              viewMode={true}
             />
           </div>
         )}
@@ -279,7 +280,6 @@ export default function UploadPage() {
       {isDragging && (
         <div className="fixed inset-0 border-8 border-dashed border-blue-500 pointer-events-none rounded-3xl m-4"></div>
       )}
-
     </div>
   )
 }

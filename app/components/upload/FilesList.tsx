@@ -38,7 +38,6 @@ export default function FilesList({
                     <FileItem key={file.id} file={file} viewMode={true} />
                 ))}
                </div>
-
             </div>
         )
     }
