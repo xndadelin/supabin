@@ -6,10 +6,11 @@ interface FileItemProps {
         name: string;
         size: number;
         type: string;
-        isFolder?: boolean;
+        isFolder: boolean;
+        progress: number;
+        status: "pending" | "uploading" | "completed" | "error";
         fileCount?: number;
-        progress?: number;
-        status?: 'pending' | 'uploading' | 'completed'
+        file?: File;
     };
     onRemove?: (id: string) => void;
     viewMode?: boolean;

@@ -1,5 +1,8 @@
+'use client';
 import { useCallback, useState } from "react";
 import { createClient } from "@/app/utils/supabase/client";
+import EmptyState from "./EmptyState";
+import FilesList from "./FilesList";
 
 interface UploadedFile {
   id: string;
@@ -252,5 +255,31 @@ export default function UploadPage() {
     }
   }, [files.length])
 
-  return <div onDragOver={handleDragOver} onDragLeave={handleDragLeave}></div>;
+  return (
+    <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all duration-300 ${
+      isDragging ? 'bg-blue-50' : 'bg-gradient-to-br from slate-50 via-blue-50 to-indigo-50'
+    }`}>
+      <div className="min-h-screen flex items-center justify-center p-8 overflow-y-auto">
+        {files.length === 0 ? (
+          <EmptyState
+            isDragging={isDragging}
+            onFileSelect={handleFileSelect}
+          />
+        ): (
+          <div className="space-y-6">
+            <FilesList
+              files={files}
+              onRemove={removeFile}
+              onAddMore={handleFileSelect}
+            />
+          </div>
+        )}
+      </div>
+
+      {isDragging && (
+        <div className="fixed inset-0 border-8 border-dashed border-blue-500 pointer-events-none rounded-3xl m-4"></div>
+      )}
+
+    </div>
+  )
 }
