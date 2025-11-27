@@ -1,29 +1,10 @@
+'use client';
+
 import { useState } from "react";
 
 import { Download, Shield, User, Calendar } from "lucide-react";
 import FilesList from "../FilesList";
-
-interface FileData {
-    id: string;
-    name: string;
-    size: number;
-    type: string;
-    isFolder: boolean;
-    progress: number;
-    status: "pending" | "uploading" | "completed" | "error";
-    fileCount?: number;
-    file?: File;
-}
-
-interface UploadData {
-    id: string;
-    name: string;
-    hasPassword: boolean;
-    password?: string;
-    expiryTime: string;
-    maxDownloads: string;
-    files: FileData[];
-}
+import { FileData, UploadData } from "@/app/types";
 
 interface DownloadPageProps {
     uploadData: UploadData;

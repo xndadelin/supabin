@@ -5,18 +5,7 @@ import EmptyState from "./EmptyState";
 import FilesList from "./FilesList";
 import SettingsPanel from "./SettingsPanel";
 import { uploadFiles } from "@/app/lib/api";
-
-interface FileData {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  isFolder: boolean;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "error";
-  fileCount?: number;
-  file?: File;
-}
+import { FileData } from "@/app/types";
 
 export default function UploadPage() {
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -44,7 +33,6 @@ export default function UploadPage() {
             name: item.name,
             size: item.size,
             type: item.type || 'file',
-            isFolder: false,
             progress: 0,
             status: 'pending',
             file: item

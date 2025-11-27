@@ -4,7 +4,8 @@ export interface FileData {
     size: number;
     type: string;
     progress?: number;
-    status?: 'pending' | 'uploading' | 'completed'
+    status?: 'pending' | 'uploading' | 'completed' | 'error'
+    file?: File
 }
 
 export interface UploadData {

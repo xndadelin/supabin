@@ -5,6 +5,7 @@ import InputField from "./InputField";
 import SelectField from "./SelectField";
 import ShareLink from "./ShareLink";
 import { uploadFiles } from "@/app/lib/api";
+import { FileData } from "@/app/types";
 
 interface SettingsPanelProps {
     uploadName: string;
@@ -27,17 +28,7 @@ interface SettingsPanelProps {
     files: FileData[];
 }
 
-interface FileData {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  isFolder: boolean;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "error";
-  fileCount?: number;
-  file?: File;
-}
+
 
 
 export default function SettingsPanel({

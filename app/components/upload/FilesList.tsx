@@ -1,17 +1,6 @@
 import { File, FolderOpen, X, Check, Download, Folder, Upload } from "lucide-react";
 import FileItem from "./FileItem";
-
-interface FileData {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  isFolder: boolean;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "error";
-  fileCount?: number;
-  file?: File;
-}
+import { FileData } from "@/app/types";
 
 interface FilesListProps {
     files: FileData[];

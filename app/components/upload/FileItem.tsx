@@ -1,17 +1,8 @@
 import { File, FolderOpen, X, Check, Download, Folder } from 'lucide-react'
+import { FileData } from '@/app/types';
 
 interface FileItemProps {
-    file: {
-        id: string;
-        name: string;
-        size: number;
-        type: string;
-        isFolder: boolean;
-        progress: number;
-        status: "pending" | "uploading" | "completed" | "error";
-        fileCount?: number;
-        file?: File;
-    };
+    file: FileData;
     onRemove?: (id: string) => void;
     viewMode?: boolean;
 }
@@ -20,21 +11,18 @@ export default function FileItem(
     { file, onRemove, viewMode = false }: FileItemProps
 ) {
     const getBgColor = () => {
-        if (file.isFolder) return 'bg-[#fffaeb]'
         if (file.type.startsWith('image/')) return 'bg-[#fce7f3]'
         if (file.type.includes('pdf')) return 'bg-[#fee2e2]'
         return 'bg-[#dbeafe]'
     }
 
     const getFileTextColor = () => {
-        if (file.isFolder) return 'text-[#ca8a04]'
         if (file.type.startsWith('image/')) return 'text-[#be185d]'
         if (file.type.includes('pdf')) return 'text-[#dc2626]'
         return 'text-[#0284c7]'
     }
 
     const getFileIcon = () => {
-        if (file.isFolder) return <FolderOpen className={`w-4 h-4 ${getFileTextColor()}`} />
         if (file.type.startsWith('image/')) return <File className={`w-4 h-4 ${getFileTextColor()}`} />
         if (file.type.includes('pdf')) return <File className={`w-4 h-4 ${getFileTextColor()}`} />
         return <File className={`w-4 h-4 ${getFileTextColor()}`} />
@@ -58,11 +46,6 @@ export default function FileItem(
                 <div className='flex-1 min-w-0'>
                     <p className='font-medium text-[#f1f5f9] truncate text-sm'>
                         {file.name}
-                        {file.isFolder && file.fileCount && (
-                            <span className='text-[#cbd5e1] text-xs ml-1'>
-                                ({file.fileCount} files)
-                            </span>
-                        )}
                     </p>
                     <p className='text-xs text-[#cbd5e1]'>
                         {formatSize(file.size)}

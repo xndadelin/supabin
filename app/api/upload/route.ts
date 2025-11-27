@@ -32,8 +32,6 @@ export async function POST(request: NextRequest) {
         const uploadId = uploadData.id
         const fileRecords = [];
 
-        console.log(files)
-
         for(const file of files) {
             const fileBuffer = await file.arrayBuffer();
             const fileName = `${uploadId}/${Date.now()}-${file.name}`
@@ -63,8 +61,8 @@ export async function POST(request: NextRequest) {
         }
 
         const shareLink = settings.customSlug
-            ? `${process.env.NEXT_PUBLIC_APP_URL}/${settings.customSlug}`
-            : `${process.env.NEXT_PUBLIC_APP_URL}/${uploadId}`
+            ? `${process.env.NEXT_PUBLIC_APP_URL}/share/${settings.customSlug}`
+            : `${process.env.NEXT_PUBLIC_APP_URL}/share/${uploadId}`
 
         return NextResponse.json({
             shareId: uploadId,
