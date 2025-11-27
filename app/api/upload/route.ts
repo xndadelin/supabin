@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
             .insert({
                 name: settings.uploadName,
                 password_hash: passwordHash,
-                expiry_data: settings.expiryTime ? new Date(settings.expiryTime).toISOString() : null,
+                expiry_date: settings.expiryTime ? new Date(settings.expiryTime).toISOString() : null,
                 max_downloads: settings.maxDownloads === 'unlimited' ? null : parseInt(settings.maxDownloads),
                 allow_preview: settings.allowPreview, 
                 custom_slug: settings.customSlug || null,
