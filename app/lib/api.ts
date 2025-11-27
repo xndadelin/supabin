@@ -49,6 +49,16 @@ export async function downloadFile(
     return response.blob()
 }
 
+export async function downloadAllFiles(id: string): Promise<Blob> {
+    const response = await fetch(`${API_URL}/download-all/${id}/${id}`)
+
+    if(!response.ok) {
+        throw new Error('Download all failed')
+    }
+
+    return response.blob()
+}
+
 export async function verifyPassword(
     id: string,
     password: string
