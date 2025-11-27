@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createClient } from "@/app/utils/supabase/client";
 import EmptyState from "./EmptyState";
 import FilesList from "./FilesList";
@@ -99,66 +99,20 @@ export default function UploadPage() {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      setIsDragging(false);
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
 
-      const items = e.dataTransfer.items;
-      const filesList: File[] = [];
+    const droppedFiles = e.dataTransfer.files
+    if (droppedFiles.length === 0) return;
 
-      for (let i = 0; i < items.length; i++) {
-        const entry = (items[i] as any).webkitGetAsEntry?.();
-        if (entry) {
-          if (entry.isDirectory) {
-            const folderFiles = Array.from(e.dataTransfer.files).filter(
-              (
-                f: File & {
-                  webkitRelativePath?: string;
-                }
-              ) =>
-                f.webkitRelativePath &&
-                f.webkitRelativePath.startsWith(entry.name)
-            );
-            const newFiles = processFiles(folderFiles, entry.name);
-            setFiles((prev) => [...prev, ...newFiles]);
-          } else {
-            filesList.push(e.dataTransfer.files[i]);
-          }
-        }
-      }
+    const newFiles = processFiles(droppedFiles)
+    setFiles(prev => [...prev, ...newFiles])
+    simulateUpload(newFiles)
 
-      if (filesList.length > 0) {
-        const newFiles = processFiles(filesList);
-        setFiles((prev) => [...prev, ...newFiles]);
-      }
+    setShowSettings(true)
 
-      setShowSettings(true);
-    },
-    [processFiles]
-  );
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!e.target.files) return;
-    const items = e.target.files;
-    const folderName = (items[0] as any).webkitRelativePath.split("/")[0]
-    const newFiles = processFiles(items, folderName)
-    setFiles(prev => [
-        ...prev, 
-        ...newFiles
-    ])
-    // uploadFilesToSupabase(newFiles)
-  }, [processFiles])
-
-  const removeFile = useCallback((id: string) => {
-    setFiles(prev => prev.filter(f => f.id !== id));
-    if(files.length === 1) {
-        setShowSettings(false);
-        setShareLink("");
-    }
-  }, [files.length])
-
-  console.log(files)
+  }, [processFiles, simulateUpload]) 
 
   const allCompleted = files.length >.0 && files.every(f => f.status === 'completed')
   const copyToClipboard = () => {
