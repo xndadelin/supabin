@@ -1,7 +1,9 @@
 import { useState } from "react";
 
-import { Tag, Lock, Mail, Clock, Download, Eye, Send } from 'lucide-react'
+import { Tag, Lock, Mail, Clock, Download, Eye, Send, SendIcon } from 'lucide-react'
 import InputField from "./InputField";
+import SelectField from "./SelectField";
+import ShareLink from "./ShareLink";
 
 interface SettingsPanelProps {
     uploadName: string;
@@ -95,6 +97,60 @@ export default function SettingsPanel({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@hackclub.app"
             />
+
+            <SelectField
+                icon={Clock}
+                label="Will automatically delete after"
+                value={expiryTime}
+                onChange={(e) => setExpiryTime(e.target.value)}
+                options={expiryOptions}
+            />
+
+            <SelectField
+                icon={Download}
+                label="Max number of downloads"
+                value={maxDownloads}
+                onChange={(e) => setMaxDownloads(e.target.value)}
+                options={downloadOptions}
+            />
+
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-slate-600" />
+                    <span className="text-sm font-medium text-slate-700">Allow preview files</span>
+                </div>
+                <button
+                    onClick={() => setAllowPreview(!allowPreview)}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${
+                        allowPreview ? 'bg-blue-500' : 'bg-slate-300'
+                    }`}
+                >
+                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                        allowPreview ? 'translate-x-6' : ''
+                    }`}>
+                    </div>
+                </button>
+            </div>
+
+            {allCompleted && shareLink && (
+                <ShareLink
+                    link={shareLink}
+                    customSlug={customSlug}
+                    setCustomSlug={setCustomSlug}
+                    onCopy={onCopy}
+                />
+            )}
+
+            <button
+                disabled={!allCompleted}
+                className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 transition-all ${
+                    allCompleted ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                }`}
+            >   
+                <Send className="w-5 h-5" />
+                {allCompleted ? 'Finalise & share': 'Files are loading...'}
+            </button>
+
         </div>
     )
 
