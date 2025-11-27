@@ -52,7 +52,7 @@ export async function GET(
             requiresPassword: !!uploadData.password_hash,
             allowPreview: uploadData.allow_preview,
             files: files || [],
-            expiryData: uploadData.expiry_date,
+            expiryDate: uploadData.expiry_date,
             maxDownloads: uploadData.download_count,
             createdAt: uploadData.created_at
         })
