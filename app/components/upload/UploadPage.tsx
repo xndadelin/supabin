@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { createClient } from "@/app/utils/supabase/client";
 import EmptyState from "./EmptyState";
 import FilesList from "./FilesList";
+import SettingsPanel from "./SettingsPanel";
 
 interface UploadedFile {
   id: string;
@@ -28,7 +29,7 @@ export default function UploadPage() {
   const [allowPreview, setAllowPreview] = useState<boolean>(true);
   const [shareLink, setShareLink] = useState<string>("");
   const [customSlug, setCustomSlug] = useState<string>("");
-  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [showSettings, setShowSettings] = useState<boolean>(true);
   const supabase = createClient();
 
   const uploadFilesToSupabase = useCallback(
@@ -255,6 +256,11 @@ export default function UploadPage() {
     }
   }, [files.length])
 
+  const allCompleted = files.length >.0 && files.every(f => f.status === 'completed')
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareLink)
+  }
+
   return (
     <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all duration-300 ${
       isDragging ? 'bg-blue-50' : 'bg-gradient-to-br from slate-50 via-blue-50 to-indigo-50'
@@ -273,6 +279,29 @@ export default function UploadPage() {
               onAddMore={handleFileSelect}
               viewMode={true}
             />
+
+            {showSettings && (
+              <SettingsPanel
+                uploadName={uploadName}
+                setUploadName={setUploadName}
+                password={password}
+                setPassword={setPassword}
+                email={email}
+                setEmail={setEmail}
+                expiryTime={expiryTime}
+                setExpiryTime={setExpiryTime}
+                maxDownloads={maxDownloads}
+                setMaxDownloads={setMaxDownloads}
+                allowPreview={allowPreview}
+                setAllowPreview={setAllowPreview}
+                shareLink={shareLink}
+                customSlug={customSlug}
+                setCustomSlug={setCustomSlug}
+                allCompleted={allCompleted}
+                onCopy={copyToClipboard}
+              />
+            )}
+
           </div>
         )}
       </div>
