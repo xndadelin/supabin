@@ -4,6 +4,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import EmptyState from "./EmptyState";
 import FilesList from "./FilesList";
 import SettingsPanel from "./SettingsPanel";
+import { uploadFiles } from "@/app/lib/api";
 
 interface FileData {
   id: string;
@@ -30,6 +31,7 @@ export default function UploadPage() {
   const [shareLink, setShareLink] = useState<string>("");
   const [customSlug, setCustomSlug] = useState<string>("");
   const [showSettings, setShowSettings] = useState<boolean>(true);
+  const [error, setError] = useState('')
 
   const processFiles = useCallback((items: FileList): FileData[] => {
       const newFiles: FileData[] = []
@@ -44,7 +46,8 @@ export default function UploadPage() {
             type: item.type || 'file',
             isFolder: false,
             progress: 0,
-            status: 'pending'
+            status: 'pending',
+            file: item
           })
         }
       }
@@ -52,42 +55,70 @@ export default function UploadPage() {
       return newFiles;
   }, [])
 
-  const simulateUpload = useCallback((filesToUpload: FileData[]) => {
-    setUploading(true);
+  const simulateUpload = useCallback(async(filesToUpload: FileData[]) => {
+    try {
+      setUploading(true);
+      setError("")
 
-    filesToUpload.forEach((file) => {
-      const interval = setInterval(() => {
-        setFiles(prev => 
-          prev.map(f => {
-            if(f.id === file.id && f.progress < 100) {
-              const newProgress = Math.min(f.progress + Math.random() * 30, 100)
-              return {
-                ...f,
-                progress: newProgress,
-                status: newProgress === 100 ? "completed" : "uploading"
-              }
+      setFiles(prev => 
+        prev.map(f => {
+          if(filesToUpload.some(u => u.id === f.id)) {
+            return {
+              ...f,
+              status: 'uploading',
+              progress: 10
             }
-            return f
-          })
-        )
-      }, 300)
+          }
+          return f;
+        })
+      )
 
-      setTimeout(() => {
-        clearInterval(interval);
-        setFiles(prev =>
-          prev.map(f =>
-            f.id === file.id ? { ...f, progress: 100, status: 'completed' } : f
-          )
-        )
-      }, 2000)
-    })
+      const filesToSend = filesToUpload
+        .map(f => f.file)
+        .filter((f): f is File => f !== undefined)
 
-    setTimeout(() => {
+      const { shareId, shareLink } = await uploadFiles(filesToSend, {
+        uploadName,
+        password,
+        email,
+        expiryTime,
+        maxDownloads,
+        allowPreview,
+        customSlug
+      })
+
+      setFiles(prev => 
+        prev.map(f => {
+          if(filesToUpload.some(u => u.id === f.id)) {
+            return {
+              ...f,
+              progress: 100,
+              status: 'completed'
+            }
+          }
+          return f
+        })
+      )
+
+      setShareLink(shareLink)
       setUploading(false)
-      const randomId = Math.random().toString(36).substring(2, 9);
-      setShareLink(window.location.origin + `/${randomId}`)
-    }, 2500);
-  }, [])
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Upload failed')
+      setUploading(false)
+
+      setFiles(prev => 
+        prev.map(f => {
+          if(filesToUpload.some(u => u.id === f.id)) {
+            return {
+              ...f,
+              status: 'error'
+            }
+          }
+          return f
+        })
+      )
+    } 
+  }, [uploadName, password, email, expiryTime, maxDownloads, allowPreview, customSlug])
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -141,6 +172,8 @@ export default function UploadPage() {
     navigator.clipboard.writeText(shareLink)
   }
 
+  console.log(files)
+
   return (
     <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all overflow-y-auto duration-300 ${
       isDragging ? 'bg-[#1e293b]' : 'bg-[#0f172a]'
@@ -153,6 +186,13 @@ export default function UploadPage() {
           />
         ): (
           <div className="w-full max-w-2xl space-y-4">
+
+            {error && (
+              <div className="p-3 bg-red-900/20 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
             <FilesList
               files={files}
               onRemove={removeFile}
@@ -179,6 +219,7 @@ export default function UploadPage() {
                 setCustomSlug={setCustomSlug}
                 allCompleted={allCompleted}
                 onCopy={copyToClipboard}
+                files={files}
               />
             )}
 

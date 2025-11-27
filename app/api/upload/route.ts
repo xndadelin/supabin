@@ -32,6 +32,8 @@ export async function POST(request: NextRequest) {
         const uploadId = uploadData.id
         const fileRecords = [];
 
+        console.log(files)
+
         for(const file of files) {
             const fileBuffer = await file.arrayBuffer();
             const fileName = `${uploadId}/${Date.now()}-${file.name}`
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error(error)
         return NextResponse.json(
-            { error: 'upload failed' },
+            { error: 'upload failed' + error },
             { status: 500 }
         )
     }

@@ -4,6 +4,7 @@ import { Tag, Lock, Mail, Clock, Download, Eye, Send, SendIcon } from 'lucide-re
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 import ShareLink from "./ShareLink";
+import { uploadFiles } from "@/app/lib/api";
 
 interface SettingsPanelProps {
     uploadName: string;
@@ -23,7 +24,21 @@ interface SettingsPanelProps {
     setCustomSlug: (slug: string) => void;
     allCompleted: boolean;
     onCopy: () => void;
+    files: FileData[];
 }
+
+interface FileData {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  isFolder: boolean;
+  progress: number;
+  status: "pending" | "uploading" | "completed" | "error";
+  fileCount?: number;
+  file?: File;
+}
+
 
 export default function SettingsPanel({
     uploadName, 
@@ -42,9 +57,11 @@ export default function SettingsPanel({
     customSlug, 
     setCustomSlug,
     allCompleted,
-    onCopy
+    onCopy,
+    files
 }: SettingsPanelProps) {
     const [showQR, setShowQR] = useState<boolean>(true)
+    const [isUploading, setIsUploading] = useState<boolean>(false)
 
     const expiryOptions = [
         { value: '1', label: '1 hour' },
@@ -64,6 +81,30 @@ export default function SettingsPanel({
         { value: '25', label: '25 downloads' },
         { value: '100', label: '100 downloads' }
     ]
+
+    const handleFinalizeShare = async () => {
+        try {
+            setIsUploading(true);
+            
+            const filesToSend = files
+                .map(f => f.file)
+                .filter((f): f is File => f !== undefined)
+
+            await uploadFiles(filesToSend, {
+                uploadName,
+                password,
+                email,
+                expiryTime,
+                maxDownloads,
+                allowPreview,
+                customSlug
+            })
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsUploading(true)
+        }
+    }
 
     return (
         <div className="bg-[#1e293b]/95 backdrop-blur-sm rounded-lg shadow-sm p-4 space-y-3 border border-[#334155]">
@@ -144,13 +185,14 @@ export default function SettingsPanel({
             )}
 
             <button
-                disabled={!allCompleted}
+                onClick={handleFinalizeShare}
+                disabled={!allCompleted || isUploading}
                 className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
                     allCompleted ? 'bg-[#3ecf8e] hover:bg-[#249361] text-[#0f172a] shadow-sm' : 'bg-[#334155] text-[#64748b] cursor-not-allowed'
                 }`}
             >   
                 <Send className="w-4 h-4" />
-                {allCompleted ? 'Finalise & share': 'Files are loading...'}
+                {isUploading ? 'Uploading...' : allCompleted ? 'Finalise & share': 'Files are loading...'}
             </button>
 
         </div>
