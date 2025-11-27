@@ -142,7 +142,7 @@ export default function UploadPage() {
   }
 
   return (
-    <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all duration-300 ${
+    <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all overflow-y-auto duration-300 ${
       isDragging ? 'bg-[#1e293b]' : 'bg-[#0f172a]'
     }`}>
       <div className="min-h-screen flex items-center justify-center p-4 overflow-y-auto">
@@ -157,7 +157,7 @@ export default function UploadPage() {
               files={files}
               onRemove={removeFile}
               onAddMore={handleFilesSelect}
-              viewMode={true}
+              viewMode={false}
             />
 
             {showSettings && (
