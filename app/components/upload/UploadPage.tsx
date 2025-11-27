@@ -32,99 +32,6 @@ export default function UploadPage() {
   const [showSettings, setShowSettings] = useState<boolean>(true);
   const supabase = createClient();
 
-  const uploadFilesToSupabase = useCallback(
-    async (filesToUpload: UploadedFile[]) => {
-      setUploading(true);
-      for (const fileObj of filesToUpload) {
-        if (fileObj.isFolder) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    progress: 100,
-                    status: "completed",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        const realFile = fileObj.file ?? null;
-        if (!realFile) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    status: "error",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileObj.id
-              ? {
-                  ...f,
-                  status: "uploading",
-                }
-              : f
-          )
-        );
-        const folderPath = uploadName ? `${uploadName}` : "uploads";
-        const filePath = `${folderPath}/${Date.now()}_${realFile.name}}`;
-        const { error } = await supabase.storage
-          .from("uploads")
-          .upload(filePath, realFile, {
-            upsert: true,
-          });
-        if (error) {
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileObj.id
-                ? {
-                    ...f,
-                    status: "error",
-                  }
-                : f
-            )
-          );
-          continue;
-        }
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileObj.id
-              ? { ...f, progress: 100, status: "completed" }
-              : f
-          )
-        );
-        setUploading(false);
-        const slug = customSlug || Math.random().toString(36).substring(2, 9);
-        await supabase.from("uploads").insert({
-          slug,
-          email,
-          password,
-          max_downloads: maxDownloads,
-          expiry_hours: expiryTime,
-          allow_preview: allowPreview,
-          created_at: new Date(),
-        });
-      }
-    },
-    [
-      uploadName,
-      customSlug,
-      email,
-      password,
-      maxDownloads,
-      expiryTime,
-      allowPreview,
-    ]
-  );
-
   const processFiles = useCallback(
     (
       items: FileList | File[],
@@ -233,7 +140,7 @@ export default function UploadPage() {
 
       setShowSettings(true);
     },
-    [processFiles, uploadFilesToSupabase]
+    [processFiles]
   );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,8 +152,8 @@ export default function UploadPage() {
         ...prev, 
         ...newFiles
     ])
-    uploadFilesToSupabase(newFiles)
-  }, [processFiles, uploadFilesToSupabase])
+    // uploadFilesToSupabase(newFiles)
+  }, [processFiles])
 
   const removeFile = useCallback((id: string) => {
     setFiles(prev => prev.filter(f => f.id !== id));
@@ -256,6 +163,8 @@ export default function UploadPage() {
     }
   }, [files.length])
 
+  console.log(files)
+
   const allCompleted = files.length >.0 && files.every(f => f.status === 'completed')
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareLink)
@@ -263,16 +172,16 @@ export default function UploadPage() {
 
   return (
     <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`fixed inset-0 transition-all duration-300 ${
-      isDragging ? 'bg-blue-50' : 'bg-gradient-to-br from slate-50 via-blue-50 to-indigo-50'
+      isDragging ? 'bg-[#1e293b]' : 'bg-[#0f172a]'
     }`}>
-      <div className="min-h-screen flex items-center justify-center p-8 overflow-y-auto">
+      <div className="min-h-screen flex items-center justify-center p-4 overflow-y-auto">
         {files.length === 0 ? (
           <EmptyState
             isDragging={isDragging}
             onFileSelect={handleFileSelect}
           />
         ): (
-          <div className="space-y-6">
+          <div className="w-full max-w-2xl space-y-4">
             <FilesList
               files={files}
               onRemove={removeFile}
@@ -307,7 +216,7 @@ export default function UploadPage() {
       </div>
 
       {isDragging && (
-        <div className="fixed inset-0 border-8 border-dashed border-blue-500 pointer-events-none rounded-3xl m-4"></div>
+        <div className="fixed inset-0 border-2 border-dashed border-[#3ecf8e] pointer-events-none rounded-2xl m-2"></div>
       )}
     </div>
   )

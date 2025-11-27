@@ -21,8 +21,8 @@ export default function InputField({
 }: InputFieldProps) {
     return (
         <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                <Icon className="w-4 h-4" />
+            <label className="flex items-center gap-1.5 text-xs font-medium text-[#cbd5e1] mb-1.5">
+                <Icon className="w-3.5 h-3.5" />
                 {label}
             </label>
             <input
@@ -31,7 +31,7 @@ export default function InputField({
                 onChange={onChange}
                 placeholder={placeholder}
                 maxLength={maxLength}
-                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition all"
+                className="w-full px-3 py-2 bg-[#1e293b] border border-[#334155] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3ecf8e] focus:ring-opacity-50 focus:border-transparent transition-all text-sm text-[#f1f5f9] placeholder-[#64748b]"
             />     
         </div>
     )

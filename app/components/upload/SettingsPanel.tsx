@@ -44,7 +44,7 @@ export default function SettingsPanel({
     allCompleted,
     onCopy
 }: SettingsPanelProps) {
-    const [showQR, setShowQR] = useState<boolean>(false)
+    const [showQR, setShowQR] = useState<boolean>(true)
 
     const expiryOptions = [
         { value: '1', label: '1 hour' },
@@ -66,8 +66,8 @@ export default function SettingsPanel({
     ]
 
     return (
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 space-y-5">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+        <div className="bg-[#1e293b]/95 backdrop-blur-sm rounded-lg shadow-sm p-4 space-y-3 border border-[#334155]">
+            <h3 className="text-sm font-semibold text-[#f1f5f9] mb-3">
                 Share settings
             </h3>
 
@@ -114,19 +114,19 @@ export default function SettingsPanel({
                 options={downloadOptions}
             />
 
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-[#0f172a] rounded-lg border border-[#334155]">
                 <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-slate-600" />
-                    <span className="text-sm font-medium text-slate-700">Allow preview files</span>
+                    <Eye className="w-3.5 h-3.5 text-[#cbd5e1]" />
+                    <span className="text-xs font-medium text-[#cbd5e1]">Allow preview files</span>
                 </div>
                 <button
                     onClick={() => setAllowPreview(!allowPreview)}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                        allowPreview ? 'bg-blue-500' : 'bg-slate-300'
+                    className={`relative w-10 h-5 rounded-full transition-colors ${
+                        allowPreview ? 'bg-[#3ecf8e]' : 'bg-[#ced4da]'
                     }`}
                 >
-                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                        allowPreview ? 'translate-x-6' : ''
+                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                        allowPreview ? 'translate-x-5' : ''
                     }`}>
                     </div>
                 </button>
@@ -138,16 +138,18 @@ export default function SettingsPanel({
                     customSlug={customSlug}
                     setCustomSlug={setCustomSlug}
                     onCopy={onCopy}
+                    showQR={showQR}
+                    setShowQR={setShowQR}
                 />
             )}
 
             <button
                 disabled={!allCompleted}
-                className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 transition-all ${
-                    allCompleted ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
+                    allCompleted ? 'bg-[#3ecf8e] hover:bg-[#249361] text-[#0f172a] shadow-sm' : 'bg-[#334155] text-[#64748b] cursor-not-allowed'
                 }`}
             >   
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4" />
                 {allCompleted ? 'Finalise & share': 'Files are loading...'}
             </button>
 

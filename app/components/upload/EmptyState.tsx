@@ -11,23 +11,23 @@ export default function EmptyState({
 } : EmptyStateProps) {
     return (
         <div className="text-center">
-            <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full mb-8 transition-all duration-300 ${
-                isDragging ? 'bg-blue-500 scale-110' : 'bg-white shadow-lg'
+            <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 transition-all duration-300 ${
+                isDragging ? 'bg-[#3ecf8e] scale-110' : 'bg-[#1e293b] shadow-md border border-[#334155]'
             }`}>
-                <Upload className={`w-16 h-16 transition-colors ${
-                    isDragging ? 'text-white' : 'text-slate-400'
+                <Upload className={`w-10 h-10 transition-colors ${
+                    isDragging ? 'text-[#0f172a]' : 'text-[#3ecf8e]'
                 }`} />
             </div>
 
-            <h1 className="text-5xl font-bold text-slate-800 mb-4">
+            <h1 className="text-3xl font-bold text-[#f1f5f9] mb-2">
                 {isDragging ? 'Drop here': 'Drop anywhere'}
             </h1>
 
-            <p className="text-xl text-slate-500 mb-12">
+            <p className="text-sm text-[#cbd5e1] mb-8">
                 or click to select files or folders
             </p>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-3 justify-center">
                 <label className="inline-block cursor-pointer">
                     <input
                         type="file"
@@ -35,8 +35,8 @@ export default function EmptyState({
                         onChange={onFileSelect}
                         className="hidden"
                     />
-                    <span className="inline-flex items-center gap-3 px-8 py-8 bg-blue-500 text-white text-lg rounded-2xl font-medium hover:bg-blue-600 transition-all hover:scale-105 shadow-lg">
-                        <Upload className="w-6 h-6" />
+                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#3ecf8e] text-[#0f172a] text-sm rounded-lg font-medium hover:bg-[#249361] transition-all hover:scale-105 shadow-sm">
+                        <Upload className="w-4 h-4" />
                         Select files
                     </span>
                 </label>

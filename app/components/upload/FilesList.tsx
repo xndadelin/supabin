@@ -25,15 +25,15 @@ export default function FilesList({
 }: FilesListProps ) {
     if(viewMode) {
         return (
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-                <div className="p-6 border-b border-slate-200">
-                    <h3 className="text-xl font-semibold text-slate-700 flex items-center gap-3">
-                        <File className="w-6 h-6 text-blue-500" />
+            <div className="bg-[#1e293b] rounded-lg shadow-sm border border-[#334155] overflow-hidden">
+                <div className="p-3 border-b border-[#334155]">
+                    <h3 className="text-sm font-semibold text-[#f1f5f9] flex items-center gap-2">
+                        <File className="w-4 h-4 text-[#3ecf8e]" />
                         {files.length} {files.length === 1 ? 'file' : "files"}
                     </h3> 
                 </div>
 
-               <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+               <div className="divide-y divide-[#0f172a] max-h-64 overflow-y-auto">
                 {files.map((file) => (
                     <FileItem key={file.id} file={file} viewMode={true} />
                 ))}

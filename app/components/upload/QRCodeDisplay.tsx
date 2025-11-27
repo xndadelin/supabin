@@ -8,22 +8,22 @@ export default function QRCodeDisplay({ link }: QRCodeDisplayProps) {
     if(!link) return null;
 
     return (
-        <div className="flex flex-col items-center gap-3 p-4 bg-white rounded-xl border border-slate-200">
+        <div className="flex flex-col items-center gap-2 p-3 bg-[#0f172a] rounded-lg border border-[#334155]">
             <div style={{
-                background: 'white', padding: 8, borderRadius: 8
+                background: '#0f172a', padding: 6, borderRadius: 6, border: '1px solid #334155'
             }}>
                 <QRCode
                     value={link}
-                    size={256}
+                    size={200}
                     level="H"
-                    bgColor="#ffffff"
-                    fgColor="#000000"
+                    bgColor="#0f172a"
+                    fgColor="#ffffff"
                 />
             </div> 
-            <p className="text-xs text-slate-500 text-center">
+            <p className="text-xs text-[#cbd5e1] text-center">
                 Scan this for fast access
             </p> 
-            <a className="text-xs text-blue-600" href={link}>{link}</a>
+            <a className="text-xs text-[#3ecf8e] hover:text-[#249361] truncate max-w-full" href={link}>{link}</a>
         </div>
     )
 

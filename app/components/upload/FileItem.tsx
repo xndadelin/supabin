@@ -20,17 +20,24 @@ export default function FileItem(
     { file, onRemove, viewMode = false }: FileItemProps
 ) {
     const getBgColor = () => {
-        if (file.isFolder) return 'bg-yellow-100'
-        if (file.type.startsWith('image/')) return 'bg-pink-100'
-        if (file.type.includes('pdf')) return 'bg-red-100'
-        return 'bg-blue-100'
+        if (file.isFolder) return 'bg-[#fffaeb]'
+        if (file.type.startsWith('image/')) return 'bg-[#fce7f3]'
+        if (file.type.includes('pdf')) return 'bg-[#fee2e2]'
+        return 'bg-[#dbeafe]'
+    }
+
+    const getFileTextColor = () => {
+        if (file.isFolder) return 'text-[#ca8a04]'
+        if (file.type.startsWith('image/')) return 'text-[#be185d]'
+        if (file.type.includes('pdf')) return 'text-[#dc2626]'
+        return 'text-[#0284c7]'
     }
 
     const getFileIcon = () => {
-        if (file.isFolder) return <FolderOpen className='w-6 h-6 text-yellow-600' />
-        if (file.type.startsWith('image/')) return <File className='w-6 h-6 text-pink-600' />
-        if (file.type.includes('pdf')) return <File className='w-6 h-6 text-red-600' />
-        return <File className='w-6 h-6 text-blue-600' />
+        if (file.isFolder) return <FolderOpen className={`w-4 h-4 ${getFileTextColor()}`} />
+        if (file.type.startsWith('image/')) return <File className={`w-4 h-4 ${getFileTextColor()}`} />
+        if (file.type.includes('pdf')) return <File className={`w-4 h-4 ${getFileTextColor()}`} />
+        return <File className={`w-4 h-4 ${getFileTextColor()}`} />
     }
 
     const formatSize = (bytes: number): string => {
@@ -42,41 +49,41 @@ export default function FileItem(
     }
 
     return (
-        <div className={`p-5 transition-colors ${viewMode ? 'hover:bg-blue-50' : 'hover:bg-slate-50'}`}>
-            <div className='flex items-center gap-4'>
-                <div className={`p-3 rounded-xl ${getBgColor()}`}>
+        <div className={`p-3 transition-colors ${viewMode ? 'hover:bg-[#0f172a]' : 'hover:bg-[#0f172a]'}`}>
+            <div className='flex items-center gap-3'>
+                <div className={`p-2 rounded-lg ${getBgColor()}`}>
                     {getFileIcon()}
                 </div>
 
                 <div className='flex-1 min-w-0'>
-                    <p className='font-medium text-slate-800 truncate'>
+                    <p className='font-medium text-[#f1f5f9] truncate text-sm'>
                         {file.name}
                         {file.isFolder && file.fileCount && (
-                            <span className='text-slate-500 text-sm ml-2'>
+                            <span className='text-[#cbd5e1] text-xs ml-1'>
                                 ({file.fileCount} files)
                             </span>
                         )}
                     </p>
-                    <p className='text-sm text-slate-500'>
+                    <p className='text-xs text-[#cbd5e1]'>
                         {formatSize(file.size)}
                     </p>
                 </div>
 
-                <div className='flex items-center gap-4'>
+                <div className='flex items-center gap-2'>
                     {!viewMode && (
                         <>
                             {file.status === 'completed' ? (
-                                <div className='flex items-center gap-2 text-green-600'>
-                                    <div className='p-1 bg-green-100 rounded-full'>
-                                        <Check className='w-5 h-5' />
+                                <div className='flex items-center gap-1 text-[#3ecf8e]'>
+                                    <div className='p-0.5 bg-[#d3f9d8] rounded-full'>
+                                        <Check className='w-4 h-4' />
                                     </div>
                                 </div>
                             ):  file.status === 'uploading' && file.progress !== undefined ? (
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-32 h-2 bg-slate-200 rounded-full overflow-hidden'>
+                                <div className='flex items-center gap-2'>
+                                    <div className='w-24 h-1.5 bg-[#dee2e6] rounded-full overflow-hidden'>
                                         <div style={{
                                             width: `${file.progress}`
-                                        }} className='h-full bg-blue-500 transition-all duration-300 rounded-full' />
+                                        }} className='h-full bg-[#3ecf8e] transition-all duration-300 rounded-full' />
                                     </div>
                                 </div>
                             ): null} 
@@ -84,15 +91,15 @@ export default function FileItem(
                             {onRemove && (
                                 <button
                                     onClick={() => onRemove(file.id)}
-                                    className='p-2 hover:bg-red-50 rounded-xl transition-colors'
+                                    className='p-1.5 hover:bg-[#dc2626]/20 rounded-lg transition-colors'
                                 >
-                                    <X className='w-5 h-5 text-slate-400 hover:text-red-500' />
+                                    <X className='w-4 h-4 text-[#64748b] hover:text-[#ff6b6b]' />
                                 </button>
                             )}
 
                             {viewMode && (
-                                <button className='px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-medium'>
-                                    <Download className='w-4 h-4' />
+                                <button className='px-3 py-1.5 bg-[#3ecf8e] text-[#0f172a] rounded-lg hover:bg-[#249361] transition-colors flex items-center gap-1.5 text-xs font-medium'>
+                                    <Download className='w-3.5 h-3.5' />
                                     Download
                                 </button>
                             )}
