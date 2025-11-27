@@ -5,7 +5,7 @@ import EmptyState from "./EmptyState";
 import FilesList from "./FilesList";
 import SettingsPanel from "./SettingsPanel";
 
-interface UploadedFile {
+interface FileData {
   id: string;
   name: string;
   size: number;
@@ -19,7 +19,7 @@ interface UploadedFile {
 
 export default function UploadPage() {
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [files, setFiles] = useState<FileData[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadName, setUploadName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -30,69 +30,64 @@ export default function UploadPage() {
   const [shareLink, setShareLink] = useState<string>("");
   const [customSlug, setCustomSlug] = useState<string>("");
   const [showSettings, setShowSettings] = useState<boolean>(true);
-  const supabase = createClient();
 
-  const processFiles = useCallback(
-    (
-      items: FileList | File[],
-      folderName: string | null = null
-    ): UploadedFile[] => {
-      const newFiles: UploadedFile[] = [];
-      let totalSize = 0;
-      let fileCount = 0;
-
-      for (let i = 0; i < items.length; i++) {
+  const processFiles = useCallback((items: FileList): FileData[] => {
+      const newFiles: FileData[] = []
+      for(let i = 0; i < items.length; i++) {
         const item = items[i];
-        if (item?.type || item?.size) {
-          totalSize = totalSize + item.size;
-          fileCount++;
-        }
-      }
 
-      if (folderName) {
-        newFiles.push({
-          id: Math.random().toString(36).substring(2, 9),
-          name: folderName,
-          size: totalSize,
-          type: "folder",
-          isFolder: true,
-          fileCount,
-          progress: 0,
-          status: "pending",
-        });
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i] as File;
+        if(item.size > 0) {
           newFiles.push({
             id: Math.random().toString(36).substring(2, 9),
             name: item.name,
             size: item.size,
-            type: item.type || "file",
+            type: item.type || 'file',
             isFolder: false,
             progress: 0,
-            status: "pending",
-            file: item,
-          });
-        }
-      } else {
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i] as File;
-          newFiles.push({
-            id: Math.random().toString(36).substring(2, 9),
-            name: item.name,
-            size: item.size,
-            type: item.type || "file",
-            isFolder: false,
-            progress: 0,
-            status: "pending",
-            file: item,
-          });
+            status: 'pending'
+          })
         }
       }
 
       return newFiles;
-    },
-    []
-  );
+  }, [])
+
+  const simulateUpload = useCallback((filesToUpload: FileData[]) => {
+    setUploading(true);
+
+    filesToUpload.forEach((file) => {
+      const interval = setInterval(() => {
+        setFiles(prev => 
+          prev.map(f => {
+            if(f.id === file.id && f.progress < 100) {
+              const newProgress = Math.min(f.progress + Math.random() * 30, 100)
+              return {
+                ...f,
+                progress: newProgress,
+                status: newProgress === 100 ? "completed" : "uploading"
+              }
+            }
+            return f
+          })
+        )
+      }, 300)
+
+      setTimeout(() => {
+        clearInterval(interval);
+        setFiles(prev =>
+          prev.map(f =>
+            f.id === file.id ? { ...f, progress: 100, status: 'completed' } : f
+          )
+        )
+      }, 2000)
+    })
+
+    setTimeout(() => {
+      setUploading(false)
+      const randomId = Math.random().toString(36).substring(2, 9);
+      setShareLink(window.location.origin + `/${randomId}`)
+    }, 2500);
+  }, [])
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
