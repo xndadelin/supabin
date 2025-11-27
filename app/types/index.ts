@@ -13,9 +13,11 @@ export interface UploadData {
     name: string;
     hasPassword: boolean;
     password?: string;
-    expiryTime: string;
+    expiryDate: string;
     maxDownloads: string;
     files: FileData[];
+    downloadCount: number;
+    requiresPassword: boolean;
 }
 
 export interface SelectOption {

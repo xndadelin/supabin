@@ -30,6 +30,7 @@ export async function getUploadData(id: string): Promise<UploadData>{
     const response = await fetch(`${API_URL}/share/${id}`)
 
     if(!response.ok) {
+        console.log(response)
         throw new Error('Failed to fetch upload data')
     }
 
