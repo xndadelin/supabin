@@ -114,6 +114,28 @@ export default function UploadPage() {
 
   }, [processFiles, simulateUpload]) 
 
+  const handleFilesSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!e.target.files) return;
+    
+    const newFiles = processFiles(e.target.files)
+    setFiles(prev => [...prev, ...newFiles])
+    simulateUpload(newFiles)
+
+    setShowSettings(true)
+
+  }, [processFiles, simulateUpload])
+
+  const removeFile = useCallback((id: string) => {
+    setFiles(prev => {
+      const filtered = prev.filter(f => f.id !== id);
+      if (filtered.length == 0) {
+        setShowSettings(false)
+        setShareLink("")
+      }
+      return filtered;
+    })
+  }, [])
+
   const allCompleted = files.length >.0 && files.every(f => f.status === 'completed')
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareLink)
@@ -127,14 +149,14 @@ export default function UploadPage() {
         {files.length === 0 ? (
           <EmptyState
             isDragging={isDragging}
-            onFileSelect={handleFileSelect}
+            onFileSelect={handleFilesSelect}
           />
         ): (
           <div className="w-full max-w-2xl space-y-4">
             <FilesList
               files={files}
               onRemove={removeFile}
-              onAddMore={handleFileSelect}
+              onAddMore={handleFilesSelect}
               viewMode={true}
             />
 
