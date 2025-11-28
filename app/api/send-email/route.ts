@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 
 export async function POST(req: NextRequest) {
     try {
-        let { to, link, uploadName, password } = await req.json();
+        const { to, link, uploadName, password } = await req.json();
 
         const subject = `Files shared: ${uploadName}`
         const text = `You have received files via Supabin.

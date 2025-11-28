@@ -10,7 +10,7 @@ export async function GET(
         const params = 'then' in context.params ? await context.params : context.params;
         const { id } = params;
 
-        let {
+        const {
             data: uploadData, 
             error: uploadError
         } = await supabase
