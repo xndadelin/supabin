@@ -61,10 +61,6 @@ export default function UploadPage() {
         })
       )
 
-      const filesToSend = filesToUpload
-        .map(f => f.file)
-        .filter((f): f is File => f !== undefined)
-        
       setFiles(prev => 
         prev.map(f => {
           if(filesToUpload.some(u => u.id === f.id)) {
@@ -77,8 +73,6 @@ export default function UploadPage() {
           return f
         })
       )
-
-      setShareLink(shareLink)
       setUploading(false)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Upload failed')

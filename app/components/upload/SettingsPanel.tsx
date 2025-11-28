@@ -76,8 +76,8 @@ export default function SettingsPanel({
             const filesToSend = files
                 .map(f => f.file)
                 .filter((f): f is File => f !== undefined)
-            
-            await uploadFiles(filesToSend, {
+
+            const { shareLink } = await uploadFiles(filesToSend, {
                 uploadName,
                 password,
                 email,
@@ -86,6 +86,21 @@ export default function SettingsPanel({
                 allowPreview,
                 customSlug
             })
+
+            if(email) [
+                await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: email,
+                        link: shareLink,
+                        uploadName,
+                        password
+                    })
+                })
+            ]
 
             window.location.href = shareLink;
 
@@ -120,7 +135,11 @@ export default function SettingsPanel({
                 placeholder="Add a password"
             />
 
-            <InputField
+            
+
+            {/**
+             * Will be up once NEST updates their certificates
+             <InputField
                 icon={Mail}
                 label="Send link on email (optional)"
                 type="email"
@@ -128,6 +147,7 @@ export default function SettingsPanel({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@hackclub.app"
             />
+            */}
 
             <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-[#cbd5e1] flex items-center gap-2">
