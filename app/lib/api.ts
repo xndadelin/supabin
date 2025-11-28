@@ -37,19 +37,6 @@ export async function getUploadData(id: string): Promise<UploadData>{
     return response.json();
 }
 
-export async function downloadFile(
-    id: string, 
-    fileId: string
-): Promise<Blob> {
-    const response = await fetch(`${API_URL}/download/${id}/${fileId}`)
-
-    if(!response.ok) {
-        throw new Error('Download failed')
-    }
-
-    return response.blob()
-}
-
 export async function downloadAllFiles(id: string): Promise<Blob> {
     const response = await fetch(`${API_URL}/download-all/${id}/`)
 

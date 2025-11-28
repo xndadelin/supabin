@@ -19,6 +19,8 @@ export async function GET(
             .or(`id.eq.${id},custom_slug.eq.${id}`)
             .single()
         
+        console.log(uploadData, uploadError)
+        
         if(uploadError) {
             console.log(uploadError)
             return NextResponse.json(

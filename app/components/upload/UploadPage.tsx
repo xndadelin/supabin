@@ -64,17 +64,7 @@ export default function UploadPage() {
       const filesToSend = filesToUpload
         .map(f => f.file)
         .filter((f): f is File => f !== undefined)
-
-      const { shareId, shareLink } = await uploadFiles(filesToSend, {
-        uploadName,
-        password,
-        email,
-        expiryTime: expiryTime ? expiryTime.toISOString() : "",
-        maxDownloads,
-        allowPreview,
-        customSlug
-      })
-
+        
       setFiles(prev => 
         prev.map(f => {
           if(filesToUpload.some(u => u.id === f.id)) {

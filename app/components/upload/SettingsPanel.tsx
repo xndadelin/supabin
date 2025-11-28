@@ -86,6 +86,9 @@ export default function SettingsPanel({
                 allowPreview,
                 customSlug
             })
+
+            window.location.href = shareLink;
+
         } catch (error) {
             console.error(error)
         } finally {
@@ -194,7 +197,9 @@ export default function SettingsPanel({
                 onClick={handleFinalizeShare}
                 disabled={!allCompleted || isUploading}
                 className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
-                    allCompleted ? 'bg-[#3ecf8e] hover:bg-[#249361] text-[#0f172a] shadow-sm' : 'bg-[#334155] text-[#64748b] cursor-not-allowed'
+                    !allCompleted || isUploading 
+                        ? 'bg-[#1e293b] text-[#64748b] cursor-not-allowed'
+                        : 'bg-[#3ecf8e] hover:bg-[#249361] text-[#0f172a] shadow-sm'
                 }`}
             >   
                 <Send className="w-4 h-4" />

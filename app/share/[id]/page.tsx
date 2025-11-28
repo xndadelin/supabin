@@ -12,6 +12,8 @@ export default function SharePage(){
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
+    console.log(uploadData)
+
     useEffect(() => {
         const fetchData = async () => {
             try {

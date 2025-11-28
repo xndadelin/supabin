@@ -67,17 +67,6 @@ export async function GET(
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' }); 
 
-        for(const file of files) [
-            await supabase
-                .from('downloads_logs')
-                .insert({
-                    upload_id: uploadData.id,
-                    file_id: file.id,
-                    ip_address: ipAddress,
-                    user_agent: userAgent
-                })
-        ]
-
         await supabase
             .from('uploads')
             .update({

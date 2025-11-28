@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { downloadFile, verifyPassword } from "@/app/lib/api";
+import { verifyPassword } from "@/app/lib/api";
 import { Download, Shield, Clock, AlertCircle } from "lucide-react";
 import FilesList from "../FilesList";
 import { UploadData } from "@/app/types";

@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto"
 
 export async function POST(
-    request: NextRequest,
-    { params } : { params: { id: string } }
+    req: NextRequest,
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
     try {
-        const { id } = params;
-        const { password } = await request.json();
+        const { id } = 'then' in context.params ? await context.params : context.params;
+        const { password } = await req.json();
 
         const { data: uploadData, error: uploadError } = await supabase
             .from('uploads')

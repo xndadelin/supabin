@@ -2,6 +2,7 @@ import { File, FolderOpen, X, Check, Download, Folder, Upload } from "lucide-rea
 import FileItem from "./FileItem";
 import { FileData } from "@/app/types";
 import { downloadAllFiles } from "@/app/lib/api";
+import { useState } from "react";
 
 interface FilesListProps {
     files: FileData[];
@@ -15,7 +16,10 @@ export default function FilesList({
     files, onRemove, onAddMore, viewMode = false, uploadId = ""
 }: FilesListProps ) {
 
+    const [isDownloading, setIsDownloading] = useState(false)
+
     const handleDownloadAll = async() => {
+        setIsDownloading(true)
         if(!files.length) return;
         const blob = await downloadAllFiles(uploadId)
         const url = URL.createObjectURL(blob)
@@ -24,6 +28,7 @@ export default function FilesList({
         a.download = "files.zip"
         a.click();
         URL.revokeObjectURL(url)
+        setIsDownloading(false)
     }
 
     if(viewMode) {
@@ -45,10 +50,13 @@ export default function FilesList({
                <div className="p-3 border-t border-[#334155] bg-[#0f172a]">
                 <button 
                     className="w-full py-2.5 bg-[#3ecf8e] text-[#0f172a] rounded-lg hover:bg-[#249361] transition-all font-semibold text-sm flex items-center justify-center gap-2"
-                    onClick={handleDownloadAll}    
+                    onClick={handleDownloadAll} 
+                    disabled={isDownloading}   
                 >
-                    <Download className="w-6 h-6" />
-                    Download all files
+                    {isDownloading ? 'Preparing...' : <>
+                        <Download className="w-4 h-4" />
+                        Download all files
+                    </> }
                 </button>
                </div>
             </div>
