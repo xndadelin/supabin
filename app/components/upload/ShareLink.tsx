@@ -22,7 +22,7 @@ export default function ShareLink({
 }: ShareLinkProps) {
 
 
-    const displayLink = customSlug ? `http://localhost:3000/share/${customSlug}` : link;
+    const displayLink = link;
 
     return (
         <div className="pt-3 border-t border-[#334155] space-y-3">
