@@ -2,11 +2,13 @@ import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-    { params }: { params: { id: string } }
+    req: NextRequest,
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
     try {
-        const { id } = await params;
+        const params = 'then' in context.params ? await context.params : context.params;
+        const { id } = params;
 
         let {
             data: uploadData, 
@@ -18,6 +20,7 @@ export async function GET(
             .single()
         
         if(uploadError) {
+            console.log(uploadError)
             return NextResponse.json(
                 { error: 'upload not found' },
                 { status: 404 }

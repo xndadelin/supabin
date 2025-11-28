@@ -4,10 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     request: NextRequest,
-    { params } : { params: { id: string } }
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = await createClient()
+        const params = 'then' in context.params ? await context.params : context.params;
         const { id } = params;
         const ipAddress = request.headers.get('x-forwarded-for') || 'unknown'
         const userAgent = request.headers.get('user-agent') || 'unknown'
@@ -52,19 +53,19 @@ export async function GET(
         }
 
         const zip = new JSZip();
-        for(const file of files) {
-            const { data: fileBuffer, error: downloadError } = await supabase.storage
+
+        for (const file of files) {
+            const { data: fileResponse, error: downloadError } = await supabase.storage
                 .from('uploads')
-                .download(file.storage_path)
-            
-            if(!downloadError && fileBuffer) {
-                zip.file(file.name, fileBuffer)
+                .download(file.storage_path);
+
+            if (!downloadError && fileResponse) {
+                const arrayBuffer = await fileResponse.arrayBuffer();
+                zip.file(file.name, arrayBuffer);
             }
         }
 
-        const zipBuffer = await zip.generateAsync({
-            type: 'arraybuffer'
-        })
+        const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' }); 
 
         for(const file of files) [
             await supabase
@@ -84,11 +85,11 @@ export async function GET(
             })
             .eq('id', uploadData.id)
 
-        return new NextResponse(zipBuffer, {
+        return new NextResponse(new Uint8Array(zipBuffer), {
             headers: {
                 'Content-Type': 'application/zip',
-                'Content-Disposition': `attachment; filename="${uploadData.name || 'files'}.zip"`
-            }
+                'Content-Disposition': `attachment; filename="files.zip"`,
+            },
         })
     } catch (error) {
         console.error(error)

@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-import { Tag, Lock, Mail, Clock, Download, Eye, Send, SendIcon } from 'lucide-react'
+import { Tag, Lock, Mail, Clock, Download, Eye, Send } from 'lucide-react'
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 import ShareLink from "./ShareLink";
@@ -14,8 +13,8 @@ interface SettingsPanelProps {
     setPassword: (password: string) => void;
     email: string;
     setEmail: (email: string) => void;
-    expiryTime: string;
-    setExpiryTime: (time: string) => void;
+    expiryTime: Date | null;
+    setExpiryTime: (time: Date | null) => void;
     maxDownloads: string;
     setMaxDownloads: (max: string) => void;
     allowPreview: boolean;
@@ -27,9 +26,6 @@ interface SettingsPanelProps {
     onCopy: () => void;
     files: FileData[];
 }
-
-
-
 
 export default function SettingsPanel({
     uploadName, 
@@ -55,13 +51,13 @@ export default function SettingsPanel({
     const [isUploading, setIsUploading] = useState<boolean>(false)
 
     const expiryOptions = [
-        { value: '1', label: '1 hour' },
-        { value: '6', label: '6 hours' },
-        { value: '24', label: '24 hours' },
-        { value: '72', label: '3 days' },
-        { value: '168', label: '1 week' },
-        { value: '720', label: '30 days' },
-        { value: 'never', label: 'Never' }
+        { value: 1, label: '1 hour' },
+        { value: 6, label: '6 hours' },
+        { value: 24, label: '24 hours' },
+        { value: 72, label: '3 days' },
+        { value: 168, label: '1 week' },
+        { value: 720, label: '30 days' },
+        { value: 0, label: 'Never' }
     ]
 
     const downloadOptions = [
@@ -80,12 +76,12 @@ export default function SettingsPanel({
             const filesToSend = files
                 .map(f => f.file)
                 .filter((f): f is File => f !== undefined)
-
+            
             await uploadFiles(filesToSend, {
                 uploadName,
                 password,
                 email,
-                expiryTime,
+                expiryTime: expiryTime ? expiryTime.toISOString() : "",
                 maxDownloads,
                 allowPreview,
                 customSlug
@@ -93,7 +89,7 @@ export default function SettingsPanel({
         } catch (error) {
             console.error(error)
         } finally {
-            setIsUploading(true)
+            setIsUploading(false)
         }
     }
 
@@ -130,13 +126,32 @@ export default function SettingsPanel({
                 placeholder="email@hackclub.app"
             />
 
-            <SelectField
-                icon={Clock}
-                label="Will automatically delete after"
-                value={expiryTime}
-                onChange={(e) => setExpiryTime(e.target.value)}
-                options={expiryOptions}
-            />
+            <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-[#cbd5e1] flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5" />
+                    Will automatically delete after
+                </label>
+                <select
+                    className="w-full px-3 py-2.5 bg-[#0f172a] border border-[#334155] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3ecf8e] text-[#f1f5f9] text-sm"
+                    value={
+                        expiryTime
+                            ? Math.round((expiryTime.getTime() - Date.now()) / (60 * 60 * 1000))
+                            : 0
+                    }
+                    onChange={e => {
+                        const hours = Number(e.target.value);
+                        if (hours === 0) {
+                            setExpiryTime(null);
+                        } else {
+                            setExpiryTime(new Date(Date.now() + hours * 60 * 60 * 1000));
+                        }
+                    }}
+                >
+                    {expiryOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                </select>
+            </div>
 
             <SelectField
                 icon={Download}
@@ -188,5 +203,4 @@ export default function SettingsPanel({
 
         </div>
     )
-
 }

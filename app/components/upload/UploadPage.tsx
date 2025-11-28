@@ -14,7 +14,7 @@ export default function UploadPage() {
   const [uploadName, setUploadName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [expiryTime, setExpiryTime] = useState<string>("");
+  const [expiryTime, setExpiryTime] = useState<Date | null>(null);
   const [maxDownloads, setMaxDownloads] = useState("unlimited");
   const [allowPreview, setAllowPreview] = useState<boolean>(true);
   const [shareLink, setShareLink] = useState<string>("");
@@ -69,7 +69,7 @@ export default function UploadPage() {
         uploadName,
         password,
         email,
-        expiryTime,
+        expiryTime: expiryTime ? expiryTime.toISOString() : "",
         maxDownloads,
         allowPreview,
         customSlug
@@ -186,6 +186,7 @@ export default function UploadPage() {
               onRemove={removeFile}
               onAddMore={handleFilesSelect}
               viewMode={false}
+              uploadId=""
             />
 
             {showSettings && (

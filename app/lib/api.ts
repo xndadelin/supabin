@@ -51,7 +51,7 @@ export async function downloadFile(
 }
 
 export async function downloadAllFiles(id: string): Promise<Blob> {
-    const response = await fetch(`${API_URL}/download-all/${id}/${id}`)
+    const response = await fetch(`${API_URL}/download-all/${id}/`)
 
     if(!response.ok) {
         throw new Error('Download all failed')

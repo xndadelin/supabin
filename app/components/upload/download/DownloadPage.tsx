@@ -108,13 +108,7 @@ export default function DownloadPage({ uploadData }: DownloadPageProps) {
                                     {uploadData.expiryDate && (
                                         <div className="flex items-center gap-1.5 text-[#cbd5e1] bg-[#0f172a] px-2.5 py-1.5 rounded">
                                             <Clock className="w-3.5 h-3.5 text-[#3ecf8e]" />
-                                            <span>Expires: {new Date(uploadData.expiryDate).toLocaleDateString()}</span>
-                                        </div>
-                                    )}
-                                    {uploadData.maxDownloads && (
-                                        <div className="flex items-center gap-1.5 text-[#cbd5e1] bg-[#0f172a] px-2.5 py-1.5 rounded">
-                                            <Download className="w-3.5 h-3.5 text-[#3ecf8e]" />
-                                            <span>Downloads: {uploadData.downloadCount}/{uploadData.maxDownloads}</span>
+                                            <span>Expires: {new Date(uploadData.expiryDate).toLocaleString()}</span>
                                         </div>
                                     )}
                                 </div>
@@ -122,7 +116,7 @@ export default function DownloadPage({ uploadData }: DownloadPageProps) {
                         </div>
                     </div>
                     
-                    <FilesList files={uploadData.files} viewMode={true} />
+                    <FilesList uploadId={uploadData.id} files={uploadData.files} viewMode={true} />
                 </div>
             </div>
         </div>

@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
         if(settings.password) {
             passwordHash = crypto.createHash('sha256').update(settings.password).digest('hex')
         }
+        console.log(settings)
 
         const { data: uploadData, error: uploadError } = await supabase
             .from('uploads')
