@@ -193,6 +193,7 @@ export default function UploadPage() {
                 allCompleted={allCompleted}
                 onCopy={copyToClipboard}
                 files={files}
+                setShareLink={setShareLink}
               />
             )}
 

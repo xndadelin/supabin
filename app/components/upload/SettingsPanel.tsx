@@ -25,6 +25,7 @@ interface SettingsPanelProps {
     allCompleted: boolean;
     onCopy: () => void;
     files: FileData[];
+    setShareLink: (link: string) => void;
 }
 
 export default function SettingsPanel({
@@ -45,7 +46,8 @@ export default function SettingsPanel({
     setCustomSlug,
     allCompleted,
     onCopy,
-    files
+    files,
+    setShareLink
 }: SettingsPanelProps) {
     const [showQR, setShowQR] = useState<boolean>(true)
     const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -102,7 +104,7 @@ export default function SettingsPanel({
                 })
             ]
 
-            window.location.href = shareLink;
+            setShareLink(shareLink || '')
 
         } catch (error) {
             console.error(error)
